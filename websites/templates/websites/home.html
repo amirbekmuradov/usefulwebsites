@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Useful Websites</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'websites/style.css' %}">
+</head>
+<body>
+    <h1>Useful Websites</h1>
+
+    <p>
+        {% if user.is_authenticated %}
+            Welcome, {{ user.username }}! 
+            <form action="/accounts/logout/" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        {% else %}
+            <a href="/accounts/login/">Login</a> or <a href="/signup/">Sign up</a> to like websites.
+        {% endif %}
+    </p>
+
+    <form method="GET" action="/">
+        <input type="text" name="q" placeholder="Search..." value="{{ query }}">
+        <button type="submit">Search</button>
+    </form>
+
+    <p>Sort by:
+        <a href="?sort=likes&q={{ query }}" {% if current_sort == 'likes' %}style="font-weight: bold;"{% endif %}>Most Liked</a> |
+        <a href="?sort=created_at&q={{ query }}" {% if current_sort == 'created_at' %}style="font-weight: bold;"{% endif %}>Newest</a>
+    </p>
+
+    <ul>
+        {% for website in websites %}
+            <li>
+                <a href="{{ website.url }}" target="_blank">{{ website.title }}</a> - {{ website.description }}
+                ({{ website.likes }} likes)
+
+                <form method="POST" action="{% url 'like_website' website.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit">
+                        {% if website.is_liked %}
+                            Unlike
+                        {% else %}
+                            Like
+                        {% endif %}
+                    </button>
+                </form>
+                <h3>Comments:</h3>
+                <ul>
+                    {% for comment in website.comment_set.all %}
+                        <li>{{ comment.user.username }}: {{ comment.text }} ({{ comment.created_at }})</li>
+                    {% empty %}
+                        <li>No comments yet.</li>
+                    {% endfor %}
+                </ul>
+                <form method="POST" action="{% url 'add_comment' website.id %}">
+                    {% csrf_token %}
+                    <textarea name="text" placeholder="Add a comment..."></textarea>
+                    <button type="submit">Comment</button>
+                </form>
+            </li>
+        {% empty %}
+            <li>No websites found.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="/add/">Add a New Website</a>
+</body>
+</html>

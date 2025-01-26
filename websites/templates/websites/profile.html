@@ -1,0 +1,18 @@
+<h1>Profile</h1>
+<h2>Liked Websites:</h2>
+<ul>
+    {% for website in liked_websites %}
+        <li>{{ website.title }}</li>
+    {% empty %}
+        <li>No liked websites yet.</li>
+    {% endfor %}
+</ul>
+
+<h2>Comments:</h2>
+<ul>
+    {% for comment in comments %}
+        <li>{{ comment.text }} on {{ comment.website.title }}</li>
+    {% empty %}
+        <li>No comments yet.</li>
+    {% endfor %}
+</ul>

@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'websites/style.css' %}">
+</head>
+<body>
+    <h1>Signup</h1>
+
+    {% if user.is_authenticated %}
+        <p>You are already logged in as {{ user.username }}. <a href="/">Go to Homepage</a></p>
+    {% else %}
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>
+            Already have an account? <a href="/accounts/login/">Login</a>
+        </p>
+    {% endif %}
+</body>
+</html>
