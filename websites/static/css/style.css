@@ -1,0 +1,112 @@
+/* Style for inline forms (used in the like button forms) */
+.inline-form {
+    display: inline;
+}
+
+/* Style for buttons, including like/unlike buttons */
+.like-button, .red-button {
+    padding: 10px 15px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #007bff; /* Default blue */
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.like-button:hover, .red-button:hover {
+    background-color: #0056b3; /* Darker blue for hover effect */
+}
+
+/* Add margin to elements that need spacing */
+.margin-top {
+    margin-top: 10px;
+}
+
+/* Global styling for form input fields */
+input[type="text"] {
+    padding: 8px;
+    font-size: 14px;
+    width: 300px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+button[type="submit"] {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #28a745; /* Green for form buttons */
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #218838; /* Darker green for hover effect */
+}
+
+/* Global styling for unordered lists */
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f8f9fa; /* Light grey background */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Heading styling */
+h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Anchor links */
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Navigation links for login/logout */
+.nav-link {
+    font-size: 14px;
+    color: #007bff;
+    margin-right: 15px;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    text-decoration: underline;
+}
+
+/* Table for improved alignment (if needed in the future) */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+}
+
+table th, table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+

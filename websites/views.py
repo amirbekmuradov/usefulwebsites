@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
+from django.http import JsonResponse
 
 def home(request):
     query = request.GET.get('q', '')
@@ -19,7 +20,12 @@ def home(request):
     for website in websites:
         website.is_liked = website.id in user_likes
 
-    return render(request, 'websites/home.html', {'websites': websites, 'current_sort': sort_by, 'query': query})
+    return render(request, 'websites/home.html', {
+        'websites': websites, 
+        'current_sort': sort_by, 
+        'query': query,
+        'user_likes': user_likes
+    })
 
 
 def add_website(request):
@@ -39,23 +45,36 @@ def add_website(request):
 def profile(request):
     liked_websites = Website.objects.filter(like__user=request.user)
     comments = Comment.objects.filter(user=request.user)
-    return render(request, 'websites/profile.html', {'liked_websites': liked_websites, 'comments': comments})
+    return render(request, 'websites/profile.html', {
+        'liked_websites': liked_websites, 
+        'comments': comments
+    })
 
 
 @login_required
 def like_website(request, website_id):
-    website = get_object_or_404(Website, id=website_id)
-    existing_like = Like.objects.filter(user=request.user, website=website)
+    if request.method == "POST":  # Only handle POST requests
+        website = get_object_or_404(Website, id=website_id)
+        liked = False  # Track if user liked or unliked
 
-    if existing_like.exists():
-        existing_like.delete()
-        website.likes -= 1
-    else:
-        Like.objects.create(user=request.user, website=website)
-        website.likes += 1
+        # Check if the user already liked the website
+        existing_like = Like.objects.filter(user=request.user, website=website)
+        if existing_like.exists():
+            # User is unliking the website
+            existing_like.delete()
+            website.likes -= 1
+        else:
+            # User is liking the website
+            Like.objects.create(user=request.user, website=website)
+            website.likes += 1
+            liked = True
 
-    website.save()
-    return redirect('/')
+        website.save()  # Save the updated like count
+        return JsonResponse({"liked": liked, "likes": website.likes})  # JSON response
+
+    # Return error for non-POST requests
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
 
 @login_required
 def add_comment(request, website_id):

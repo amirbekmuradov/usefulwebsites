@@ -1,1 +1,1 @@
-web: gunicorn usefulwebsites.wsgi 
+web: gunicorn usefulwebsites.wsgi --log-file - 

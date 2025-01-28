@@ -4,16 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <title>Useful Websites</title>
     <link rel="stylesheet" type="text/css" href="{% static 'websites/style.css' %}">
 </head>
+    
+
+
 <body>
     <h1>Useful Websites</h1>
 
     <p>
         {% if user.is_authenticated %}
             Welcome, {{ user.username }}! 
-            <form action="/accounts/logout/" method="post" style="display: inline;">
+            <form action="/accounts/logout/" method="post" class="inline-form">
                 {% csrf_token %}
                 <button type="submit">Logout</button>
             </form>
@@ -36,30 +40,17 @@
         {% for website in websites %}
             <li>
                 <a href="{{ website.url }}" target="_blank">{{ website.title }}</a> - {{ website.description }}
-                ({{ website.likes }} likes)
+                (<span class="likes-count">{{ website.likes }} likes</span>)
 
-                <form method="POST" action="{% url 'like_website' website.id %}" style="display: inline;">
+                <form method="POST" action="{% url 'like_website' website.id %}" class="inline-form">
                     {% csrf_token %}
-                    <button type="submit">
+                    <button type="submit" class="like-button">
                         {% if website.is_liked %}
                             Unlike
                         {% else %}
                             Like
                         {% endif %}
                     </button>
-                </form>
-                <h3>Comments:</h3>
-                <ul>
-                    {% for comment in website.comment_set.all %}
-                        <li>{{ comment.user.username }}: {{ comment.text }} ({{ comment.created_at }})</li>
-                    {% empty %}
-                        <li>No comments yet.</li>
-                    {% endfor %}
-                </ul>
-                <form method="POST" action="{% url 'add_comment' website.id %}">
-                    {% csrf_token %}
-                    <textarea name="text" placeholder="Add a comment..."></textarea>
-                    <button type="submit">Comment</button>
                 </form>
             </li>
         {% empty %}
@@ -68,5 +59,40 @@
     </ul>
 
     <a href="/add/">Add a New Website</a>
+
+    <script>
+        document.querySelectorAll(".like-button").forEach(button => {
+            button.addEventListener("click", function (event) {
+                event.preventDefault(); // Prevent form submission
+    
+                const form = this.closest("form"); // Get the parent form
+                const url = form.action; // Form's action URL
+                const csrfToken = form.querySelector("input[name='csrfmiddlewaretoken']").value; // CSRF token
+    
+                // Send AJAX POST request
+                fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken,
+                        "Content-Type": "application/json",
+                    },
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.liked !== undefined) {
+                            // Update button text
+                            this.textContent = data.liked ? "Unlike" : "Like";
+    
+                            // Update like count
+                            const likesCount = form.closest("li").querySelector(".likes-count");
+                            likesCount.textContent = `${data.likes} likes`;
+                        } else if (data.error) {
+                            alert(data.error);
+                        }
+                    })
+                    .catch(error => console.error("Error:", error));
+            });
+        });
+    </script>  
 </body>
 </html>
